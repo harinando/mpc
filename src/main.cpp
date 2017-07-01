@@ -67,7 +67,6 @@ Eigen::VectorXd polyfit(Eigen::VectorXd xvals, Eigen::VectorXd yvals,
 
 int main() {
   uWS::Hub h;
-
   // MPC is initialized here!
   MPC mpc;
 
@@ -78,6 +77,8 @@ int main() {
     // The 2 signifies a websocket event
     string sdata = string(data).substr(0, length);
     cout << sdata << endl;
+    double latency = 0.1;
+    double Lf = 2.67;
     if (sdata.size() > 2 && sdata[0] == '4' && sdata[1] == '2') {
       string s = hasData(sdata);
       if (s != "") {
@@ -91,7 +92,13 @@ int main() {
           double py = j[1]["y"];
           double psi = j[1]["psi"];
           double v = j[1]["speed"];
+          double steer_value = j[1]["steering_angle"];
+          double throttle_value = j[1]["throttle"];
           
+          // Account for 100ms latency
+          px += v*cos(psi)*latency;
+          py += v*sin(psi)*latency;
+          psi -= v / Lf * steer_value * latency;
 
           /*
           * TODO: Calculate steering angle and throttle using MPC.
@@ -125,9 +132,7 @@ int main() {
           auto coeffs = polyfit(ptsx_transform, ptsy_transform, 3);
           double cte = polyeval(coeffs, 0); // px = 0 & py = 0
           double epsi = -atan(coeffs[1]); // psi = 0
-
-          double steer_value = j[1]["steering_angle"];
-          double throttle_value = j[1]["throttle"];
+          
           
           Eigen::VectorXd state(6);
           state << 0, 0, 0, v, cte, epsi;
@@ -143,7 +148,7 @@ int main() {
 //          std::cout << "a' = " << vars[7] << std::endl;
 //          std::cout << std::endl;
           
-          steer_value = vars[0]/(deg2rad(25)*2.67);
+          steer_value = vars[0]/(deg2rad(25)*Lf);
           throttle_value = vars[1];
 
           json msgJson;
