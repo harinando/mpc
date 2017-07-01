@@ -2,6 +2,36 @@
 Self-Driving Car Engineer Nanodegree Program
 
 ---
+## Rubric
+#### Student describes their model in detail. This includes the state, actuators and update equations
+* The states of the model are:
+  * the vehicules's x and y coordinates
+  * the vehicule's orientation angle
+  * the vehicule's velocity
+  * the cross track error
+  * the orientation angle error
+* The actuators are
+  * The steering angle value between -25 degree and 25 degree.
+  * The throttle value between -1 and 1
+* The update equations are defined by
+![Model](data/model.png)
+#### Student discusses the reasoning behind the chosen N (timestep length) and dt (elapsed duration between timesteps) values. Additionally the student details the previous values tried.
+To chose N and dt, I considered two main factors:
+  * I made sure that the horizon prediction T = N * dt is strictly greater than the latency.
+  * N and dt are relatively small to simplify the optimization problems. As a general rule. I fixed N to be 10 and varied dt. I tried different values of dt (0.05, 0.1).
+At the end, I choose N=10, dt=0.1, T=1.
+#### If the student preprocesses waypoints, the vehicle state, and/or actuators prior to the MPC procedure it is described.
+The waypoints has been transformed to the vehicule's coordinate to simplify the mpc optimizations and the waypoint polyfits. As a result the car's positions (x, y, orientation angle) is at (0, 0, 0).
+
+#### The student implements Model Predictive Control that handles a 100 millisecond latency. Student provides details on how they deal with latency.
+I used the kinematic equations of the model to simulate a delay of 100ms in the future. Rather than feeding the waypoints directly prior to the MPC procedure, I estimated the waypoints position at t + 100ms with the following parameters
+* x(t+1), y(t+1), phi(t+1) is the estimated waypoints position at t+100ms
+* x(t), y(t), phi(t) is the waypoints at time t
+* v(t) is the speed at time t
+* delta(t) is the steering angle at time t
+* dt is 100ms
+
+![Latency](data/latency.png)
 
 ## Dependencies
 
