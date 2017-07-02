@@ -99,6 +99,7 @@ int main() {
           px += v*cos(psi)*latency;
           py += v*sin(psi)*latency;
           psi -= v / Lf * steer_value * latency;
+          v += throttle_value*latency;
 
           /*
           * TODO: Calculate steering angle and throttle using MPC.
@@ -137,16 +138,6 @@ int main() {
           Eigen::VectorXd state(6);
           state << 0, 0, 0, v, cte, epsi;
           auto vars = mpc.Solve(state, coeffs);
-          
-//          std::cout << "x' = " << vars[0] << " x = " << px << std::endl;
-//          std::cout << "y' = " << vars[1] << " y = " << py  << std::endl;
-//          std::cout << "psi' = " << vars[2] << " psi = " << psi << std::endl;
-//          std::cout << "v' = " << vars[3] << " v = " << v << std::endl;
-//          std::cout << "cte' = " << vars[4] << " cte = " << cte << std::endl;
-//          std::cout << "epsi' = " << vars[5] << " epsi = " << epsi << std::endl;
-//          std::cout << "delta' = " << vars[6] << std::endl;
-//          std::cout << "a' = " << vars[7] << std::endl;
-//          std::cout << std::endl;
           
           steer_value = vars[0]/(deg2rad(25)*Lf);
           throttle_value = vars[1];

@@ -194,8 +194,8 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
   Dvector constraints_lowerbound(n_constraints);
   Dvector constraints_upperbound(n_constraints);
   for (int i = delta_start; i < a_start; i++) {
-    vars_lowerbound[i] = -0.436332*Lf;
-    vars_upperbound[i] = 0.436332*Lf;
+    vars_lowerbound[i] = -0.436332;
+    vars_upperbound[i] = 0.436332;
   }
   
   // Acceleration/decceleration upper and lower limits.
@@ -269,17 +269,11 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
   //
   // {...} is shorthand for creating a vector, so auto x1 = {1.0,2.0}
   // creates a 2 element double vector.
-
-//  return {solution.x[x_start + 1],   solution.x[y_start + 1],
-//    solution.x[psi_start + 1], solution.x[v_start + 1],
-//    solution.x[cte_start + 1], solution.x[epsi_start + 1],
-//    solution.x[delta_start],   solution.x[a_start]
-//  };
   vector<double> results;
   results.push_back(solution.x[delta_start]);
   results.push_back(solution.x[a_start]);
 
-  for (size_t i = 0; i < N; i++) { // converted to local coordinates
+  for (size_t i = 0; i < N-1; i++) {
     results.push_back(solution.x[1 + x_start + i]);
     results.push_back(solution.x[1 + y_start + i]);
   }
